@@ -29,8 +29,6 @@ def addOperands(x):
         isNegated(x)
         return
 
-
-
 def isNegated(x):
     if "~" in x:
         listOP(x[1], False)
@@ -70,7 +68,7 @@ def addBB(x):
         split = x.split("->")
         x1 = getOP(split[0])
         x2 = getOP(split[1])
-        val = ((x1 and x2) or not x1)
+        val = ((x1[1] and x2[1]) or not x1[1])
         belief.append(val)
         beliefBase.append(belief)
         return
@@ -107,6 +105,15 @@ if __name__ == '__main__':
     print(operands)
     print("BELIEF BASE")
     print(beliefBase)
+
+    ##ikke færdig
+    for p in operators:
+        for x in beliefBase:
+            if p in x[0]:
+                if x[1] == False:
+                    print("FEJL")
+
+
 
 
 
