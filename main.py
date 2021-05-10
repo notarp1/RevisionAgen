@@ -111,7 +111,7 @@ if __name__ == '__main__':
         for x in beliefBase:
             if p in x[0]:
                 if x[1] == False:
-                    print("FEJL")
+                    print("FEJL: IKKE VALID BELIEFBASE")
 
 
 
