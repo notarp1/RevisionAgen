@@ -1,6 +1,9 @@
-import itertools
+from sympy import to_cnf
+
 operands = []
 operators = ["&", "|", "<=>", "->"]
+symbol = "abcdefghijklmnopqrstuvwxyz"
+
 
 def listOP(x, bool):
     construcop = []
@@ -18,6 +21,7 @@ def listOP(x, bool):
             construcop.append(bool)
             operands.append(construcop)
 
+
 def addOperands(x):
     for p in operators:
         if p in x:
@@ -29,11 +33,13 @@ def addOperands(x):
         isNegated(x)
         return
 
+
 def isNegated(x):
     if "~" in x:
         listOP(x[1], False)
     else:
         listOP(x, True)
+
 
 def getOP(x):
     if x[0] == "~":
@@ -45,8 +51,10 @@ def getOP(x):
             return p
 
 
-#Add belief bases
+# Add belief bases
 beliefBase = []
+
+
 def addBB(x):
     belief = []
     belief.append(x)
@@ -86,40 +94,45 @@ def addBB(x):
         beliefBase.append(belief)
         return
 
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-
     print("Enter belief state, seperated by comma")
     bb = input()
-    temp1 = []
-    temp2 = []
     list = bb.split(",")
-    value = []
-    for x in list:
-        addOperands(x)
 
-    for x in list:
-        addBB(x)
+    bbtocnf = []
+    for input in list:
+        if "<=>" in input:
+            split = input.split("<=>")
+            x1=split[0]
+            x2=split[1]
+            ifs = "("+x1+">>"+x2+")"+"&"+"("+x2+">>"+x1+")"
+            bbtocnf.append(to_cnf(ifs))
+        else:
+            bbtocnf.append(to_cnf(input))
+    for x in bbtocnf:
+        print(x)
 
-    print("OPERANDS + VALUES")
-    print(operands)
-    print("BELIEF BASE")
-    print(beliefBase)
+
+
+   # for x in list:
+   #     addOperands(x)
+
+   # for x in list:
+    #    addBB(x)
+
+
+   # print("OPERANDS + VALUES")
+   # print(operands)
+   # print("BELIEF BASE")
+    #print(beliefBase)
 
     ##ikke færdig
-    for p in operators:
-        for x in beliefBase:
-            if p in x[0]:
-                if x[1] == False:
-                    print("FEJL: IKKE VALID BELIEFBASE")
-
-
-
-
-
-
-
-
-
+   # for p in operators:
+     #   for x in beliefBase:
+      #      if p in x[0]:
+        #        if x[1] == False:
+            #        print("FEJL: IKKE VALID BELIEFBASE")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
