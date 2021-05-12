@@ -98,37 +98,24 @@ def addBB(x):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print("Enter belief state, seperated by comma")
+    print("Valid operands: '|', '&', '>>', '<->'")
     bb = input()
     list = bb.split(",")
 
-    bbtocnf = []
-    for input in list:
-        if "<=>" in input:
-            split = input.split("<=>")
-            x1=split[0]
-            x2=split[1]
-            ifs = "("+x1+">>"+x2+")"+"&"+"("+x2+">>"+x1+")"
-            bbtocnf.append(to_cnf(ifs))
-        else:
-            bbtocnf.append(to_cnf(input))
-    for x in bbtocnf:
-        print(x)
+
+    for x in list:
+        addOperands(x)
+
+    for x in list:
+        addBB(x)
 
 
-
-   # for x in list:
-   #     addOperands(x)
-
-   # for x in list:
-    #    addBB(x)
+    print("OPERANDS + VALUES")
+    print(operands)
+    print("BELIEF BASE")
+    print(beliefBase)
 
 
-   # print("OPERANDS + VALUES")
-   # print(operands)
-   # print("BELIEF BASE")
-    #print(beliefBase)
-
-    ##ikke færdig
    # for p in operators:
      #   for x in beliefBase:
       #      if p in x[0]:
