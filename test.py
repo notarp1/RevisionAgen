@@ -114,6 +114,7 @@ def recursive(belief):
         list = belief.split(" & ")
         for x in list:
             bool.append(recursive(x))
+        print(bool)
         return bool[0] and bool[1]
     if "|" in belief:
         list2 = belief.strip("(").strip(")").split(" | ")
@@ -138,12 +139,34 @@ def checkPermutations(permutations, bbtocnf):
     #
         for believestate in bbtocnf:
             sentence = str(believestate)
+            count = 0
             if recursive(sentence):
                 point = point + 1
+            for x in operators:
+                if x in sentence:
+                    count = count + 1
+            if count > 1:
+                if recursive(sentence):
+                    point = point+1
+            else:
+                if "&" in sentence:
+                    vars = sentence.split(" & ")
+                    if andOPor(vars, 1):
+                        point = point + 1
+                elif "|" in sentence:
+                    vars = sentence.split(" | ")
+                    if andOPor(vars, 0):
+                        point = point + 1
+                else:
+                    if "~" in sentence:
+                        if not getOP(sentence[1]):
+                            point = point + 1
+                    else:
+                        if getOP(sentence):
+                            point = point + 1
 
         points.append(point)
         operandsAssigned = []
-
     print(points)
     res = []
     print("------------RES------------")
@@ -194,6 +217,7 @@ if __name__ == '__main__':
     for elements in list:
         if "<->" in elements:
             word = recursiveBiConditional(elements, 0)
+            print(word)
             bbtocnf.append(to_cnf(word))
         else:
             bbtocnf.append(to_cnf(elements))
