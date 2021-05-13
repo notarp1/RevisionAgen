@@ -7,8 +7,7 @@ operandsAssigned = []
 truthvals = []
 operators = [" & ", " | "]
 symbol = "abcdefghijklmnopqrstuvwxyz"
-test ="<->"
-
+test = "<->"
 
 
 def listOP(x):
@@ -76,8 +75,8 @@ def getPermu(operands):
     letters = []
     for x in operands:
         if x not in letters:
-            letters.append(x[0]+" ")
-            letters.append("~" + x[0]+" ")
+            letters.append(x[0] + " ")
+            letters.append("~" + x[0] + " ")
 
     # add a permutation if it holds no duplicates
     permutations = []
@@ -109,6 +108,7 @@ def stringtester(str):
                     return False
     return True
 
+
 def recursive(belief):
     if "&" in belief:
         bool = []
@@ -121,9 +121,9 @@ def recursive(belief):
         return andOPor(list2, 0)
     else:
         if "~" in belief:
-            return(getOP(belief[1]))
+            return (getOP(belief[1]))
         else:
-            return(getOP(belief))
+            return (getOP(belief))
 
 
 def checkPermutations(permutations, bbtocnf):
@@ -136,7 +136,7 @@ def checkPermutations(permutations, bbtocnf):
             if clause != "":
                 addOperands(clause, True)
         print(operandsAssigned)
-    #
+        #
         for believestate in bbtocnf:
             sentence = str(believestate)
             if recursive(sentence):
@@ -148,7 +148,7 @@ def checkPermutations(permutations, bbtocnf):
     print(points)
     res = []
     print("------------RES------------")
-    print(sorted(points,reverse=True))
+    print(sorted(points, reverse=True))
     for i in range(len(points)):
         ind = int(points.index(max(points)))
         res.append(permutations[ind])
@@ -156,22 +156,23 @@ def checkPermutations(permutations, bbtocnf):
         permutations.pop(ind)
     return res
 
-#Recursive funciton to convert biconditional symbols to implication symbols
+
+# Recursive funciton to convert biconditional symbols to implication symbols
 def recursiveBiConditional(word, count):
     count = count + 1
     if count == 1:
-        newWord=""
+        newWord = ""
     bi = "<->"
     if bi not in word:
         return newWord
     if "&" in word:
         list = word.split("&")
-        newWord= newWord + recursiveBiConditional(list[0], count)
+        newWord = newWord + recursiveBiConditional(list[0], count)
         newWord = newWord + "&"
         newWord = newWord + recursiveBiConditional(list[1], count)
     elif "|" in word:
         list = word.split("|")
-        newWord= newWord + recursiveBiConditional(list[0], count)
+        newWord = newWord + recursiveBiConditional(list[0], count)
         newWord = newWord + "|"
         newWord = newWord + recursiveBiConditional(list[1], count)
     else:
@@ -182,16 +183,51 @@ def recursiveBiConditional(word, count):
         return iffs
     return newWord
 
-def revise(clause,sortedStates):
 
-    for c in bbtocnf:
-        if contradict(c,clause):
-            bbtocnf.pop(bbtocnf.index(c))
-    bbtocnf.append(clause)
+def revise(clause, sortedStates):
+    for states in sortedStates:
+        if not contradict(states, clause) and c in sortedStates:
+            sortedStates.pop(sortedStates.index(c))
+            sortedStates.insert(0, c)
+    return sortedStates
 
-def contradict(clause1,newClause):
+def contradict(clause, newClause):
+    std = str(newClause)
+    list = std.strip(" ").split('&')
+    for c in list:
+        if c in symbol and ('~' + c) in clause:
+            return False
 
-    return False
+    return True
+
+
+def remove(removeFrom, newClouse):
+    res = []
+    newClouse = str(newClouse).split()
+    for clouse in removeFrom:
+        clouse = str(clouse).split()
+        for c in newClouse:
+            if c in symbol and str('~' + c) in clouse:
+                if newClouse[newClouse.index(c)] != "~":
+                    index = clouse.index('~' + c)
+                    clouse.pop(index)
+                    for i in range(index - 2, index + 2):
+                        if index == len(clouse):
+                             continue
+                        elif clouse[index] == '|':
+                            clouse.pop(i)
+                            break
+                else:
+                    index = clouse.index(c)
+                    clouse.pop(index)
+                    for i in range(index - 2, index + 2):
+                        if index == len(clouse):
+                             continue
+                        elif clouse[index] == '|':
+                            clouse.pop(i)
+                            break
+        res.append(clouse)
+    return removeFrom
 
 
 if __name__ == '__main__':
@@ -225,15 +261,16 @@ if __name__ == '__main__':
         print("EXIT to end program")
         line = input()
         opp = []
-
+        cnffline = to_cnf(line)
         if line == "EXIT":
             break
         else:
             for c in line:
                 if c in symbol and c in operands:
-                    revise(to_cnf(line), sortedList)
+                    rev = revise(cnffline, sortedList)
+                    bbtocnf = remove(bbtocnf,cnffline)
                     break
 
-            bbtocnf.append(to_cnf(line))
-
-
+            bbtocnf.append(cnffline)
+            print(rev)
+            print(bbtocnf)
