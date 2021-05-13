@@ -197,31 +197,31 @@ def recursiveBiConditional(word, count):
     return newWord
 
 
-def revise(clause,sortedStates, bb):
+def revise(clausein,sortedStates, bb):
     isInBB = False
     unknowVars = False
     unknowVarsList = []
     isNeg = False
-    for x in str(clause):
-        if x == "~":
-            isNeg = True
-        if x in symbol:
-            if x in operands:
-                isInBB = True
-                isNeg = False
-            else:
-                unknowVars = True
-                if isNeg:
-                    unknowVarsList.append("~"+x)
-                    isNeg=False
+
+    clausein = str(clausein).split('&')
+    for clause in clausein:
+        for x in str(clause):
+            if x == "~":
+                isNeg = True
+            if x in symbol:
+                if x in operands:
+                    isInBB = True
+                    isNeg = False
                 else:
-                    unknowVarsList.append(x)
+                    unknowVars = True
+                    if isNeg:
+                        unknowVarsList.append("~"+x)
+                        isNeg=False
+                    else:
+                        unknowVarsList.append(x)
     if unknowVars:
         for x in unknowVarsList:
             addOperands(str(x), True)
-
-
-
 
     if isInBB:
         for i in range(0, len(sortedStates)):
@@ -241,8 +241,6 @@ def revise(clause,sortedStates, bb):
             global operandsAssigned
             operandsAssigned = []
 
-
-
         pointer = len(bb)
         i = 0
         while i < pointer:
@@ -254,8 +252,7 @@ def revise(clause,sortedStates, bb):
                 pointer = pointer-1
             else:
                 i = i + 1
-
-    bb.append(to_cnf(clause))
+        bb.append(to_cnf(clause))
 
     return bb
 
