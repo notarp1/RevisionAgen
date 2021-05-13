@@ -10,6 +10,7 @@ symbol = "abcdefghijklmnopqrstuvwxyz"
 test ="<->"
 
 
+
 def listOP(x):
     construcop = []
     isAssigned = False
@@ -68,7 +69,7 @@ def andOPor(list, number):
         return ops[0] and ops[1]
 
 
-def revise(operands):
+def getPermu(operands):
     # calculate how many permutations there are of the number of operands
     n = len(operands)
     # append the letters in operand and their negated form
@@ -153,7 +154,7 @@ def checkPermutations(permutations, bbtocnf):
         res.append(permutations[ind])
         points.pop(ind)
         permutations.pop(ind)
-    print(res)
+    return res
 
 #Recursive funciton to convert biconditional symbols to implication symbols
 def recursiveBiConditional(word, count):
@@ -181,6 +182,16 @@ def recursiveBiConditional(word, count):
         return iffs
     return newWord
 
+def revise(clause,sortedStates):
+
+    for c in bbtocnf:
+        if contradict(c,clause):
+            bbtocnf.pop(bbtocnf.index(c))
+    bbtocnf.append(clause)
+
+def contradict(clause1,newClause):
+
+    return False
 
 
 if __name__ == '__main__':
@@ -205,7 +216,24 @@ if __name__ == '__main__':
             if x in p:
                 addOperands(str(x), False)
     print("_________________hey_________________")
-    list = revise(operands)
+    list = getPermu(operands)
     print("_________________hey_________________")
-    checkPermutations(list, bbtocnf)
+    sortedList = checkPermutations(list, bbtocnf)
+    print(sortedList)
+    while True:
+        print("Valid operands: '|', '&', '>>', '<->'")
+        print("EXIT to end program")
+        line = input()
+        opp = []
+
+        if line == "EXIT":
+            break
+        else:
+            for c in line:
+                if c in symbol and c in operands:
+                    revise(to_cnf(line), sortedList)
+                    break
+
+            bbtocnf.append(to_cnf(line))
+
 
