@@ -117,7 +117,7 @@ def checkPermutations(permutations, bbtocnf):
             if clause != "":
                 addOperands(clause, True)
         print(operandsAssigned)
-
+    #
         for believestate in bbtocnf:
             sentence = str(believestate)
             if "&" in sentence:
