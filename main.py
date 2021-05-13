@@ -7,6 +7,7 @@ symbol = "abcdefghijklmnopqrstuvwxyz"
 
 def listOP(x, bool):
     construcop = []
+    construcop.a
     if operands == None:
         construcop.append(x)
         construcop.append(bool)

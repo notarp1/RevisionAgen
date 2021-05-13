@@ -7,6 +7,7 @@ operandsAssigned = []
 truthvals = []
 operators = [" & ", " | "]
 symbol = "abcdefghijklmnopqrstuvwxyz"
+test ="<->"
 
 
 def listOP(x):
@@ -107,6 +108,24 @@ def stringtester(str):
                     return False
     return True
 
+def recursive(belief):
+    if "&" in belief:
+        bool = []
+        list = belief.split(" & ")
+        for x in list:
+            bool.append(recursive(x))
+        print(bool)
+        return bool[0] and bool[1]
+    if "|" in belief:
+        list2 = belief.strip("(").strip(")").split(" | ")
+        return andOPor(list2, 0)
+    else:
+        if "~" in belief:
+            return(getOP(belief[1]))
+        else:
+            return(getOP(belief))
+
+
 def checkPermutations(permutations, bbtocnf):
     points = []
     global operandsAssigned
@@ -120,33 +139,29 @@ def checkPermutations(permutations, bbtocnf):
     #
         for believestate in bbtocnf:
             sentence = str(believestate)
-            if "&" in sentence:
-                vars = sentence.split(" & ")
-                bools = []
-                breakIt = False
-                for x in vars:
-                    if "|" in x:
-                        breakIt = True
-                        vals = x.strip("(").strip(")").split(" | ")
-
-                        bools.append(andOPor(vals, 0))
-                if breakIt:
-                    if (bools[0] and bools[1]):
-                        point = point + 1
-                else:
+            count = 0
+            for x in operators:
+                if x in sentence:
+                    count = count + 1
+            if count > 1:
+                if recursive(sentence):
+                    point = point+1
+            else:
+                if "&" in sentence:
+                    vars = sentence.split(" & ")
                     if andOPor(vars, 1):
                         point = point + 1
-            elif "|" in sentence:
-                vars = sentence.split(" | ")
-                if andOPor(vars, 0):
-                    point = point + 1
-            else:
-                if "~" in sentence:
-                    if not getOP(sentence[1]):
+                elif "|" in sentence:
+                    vars = sentence.split(" | ")
+                    if andOPor(vars, 0):
                         point = point + 1
                 else:
-                    if getOP(sentence):
-                        point = point + 1
+                    if "~" in sentence:
+                        if not getOP(sentence[1]):
+                            point = point + 1
+                    else:
+                        if getOP(sentence):
+                            point = point + 1
 
         points.append(point)
         operandsAssigned = []
@@ -161,6 +176,30 @@ def checkPermutations(permutations, bbtocnf):
         permutations.pop(ind)
     print(res)
 
+def recursiveBiConditional(word, count):
+    count = count + 1
+    if count == 1:
+        newWord=""
+    bi = "<->"
+    if bi not in word:
+        return newWord
+    if "&" in word:
+        list = word.split("&")
+        newWord= newWord + recursiveBiConditional(list[0], count)
+        newWord = newWord + "&"
+        newWord = newWord + recursiveBiConditional(list[1], count)
+    elif "|" in word:
+        list = word.split("|")
+        newWord= newWord + recursiveBiConditional(list[0], count)
+        newWord = newWord + "|"
+        newWord = newWord + recursiveBiConditional(list[1], count)
+    else:
+        split = word.split("<->")
+        x1 = split[0]
+        x2 = split[1]
+        iffs = "(" + x1 + ">>" + x2 + ")" + "&" + "(" + x2 + ">>" + x1 + ")"
+        return iffs
+    return newWord
 
 
 
@@ -174,17 +213,18 @@ if __name__ == '__main__':
     inverted = []
     for elements in list:
         if "<->" in elements:
-            split = elements.split("<->")
-            x1 = split[0]
-            x2 = split[1]
-            iffs = "(" + x1 + ">>" + x2 + ")" + "&" + "(" + x2 + ">>" + x1 + ")"
-            bbtocnf.append(to_cnf(iffs))
+            word = recursiveBiConditional(elements, 0)
+            print(word)
+            bbtocnf.append(to_cnf(word))
         else:
             bbtocnf.append(to_cnf(elements))
 
     for x in bbtocnf:
         print(x)
-        addOperands(str(x), False)
+    for x in symbol:
+        for p in str(bbtocnf):
+            if x in p:
+                addOperands(str(x), False)
     print("_________________hey_________________")
     list = revise(operands)
     print("_________________hey_________________")
