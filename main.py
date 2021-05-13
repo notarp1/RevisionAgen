@@ -170,21 +170,24 @@ def checkPermutations(permutations, bbtocnf):
 #Recursive funciton to convert biconditional symbols to implication symbols
 def recursiveBiConditional(word, count):
     count = count + 1
-    if count == 1:
-        newWord=""
+    newWord=""
     bi = "<->"
     if bi not in word:
-        return newWord
+        return word
     if "&" in word:
         list = word.split("&")
-        newWord= newWord + recursiveBiConditional(list[0], count)
-        newWord = newWord + "&"
-        newWord = newWord + recursiveBiConditional(list[1], count)
+        for index, l in enumerate(list):
+            newWord= newWord + recursiveBiConditional(l, count)
+            if index != len(list)-1:
+                newWord = newWord + "&"
+            #newWord = newWord + recursiveBiConditional(list[1], count)
     elif "|" in word:
         list = word.split("|")
-        newWord= newWord + recursiveBiConditional(list[0], count)
-        newWord = newWord + "|"
-        newWord = newWord + recursiveBiConditional(list[1], count)
+        for index, l in enumerate(list):
+            newWord=newWord + recursiveBiConditional(l, count)
+            if index != len(list)-1:
+                newWord = newWord + "|"
+            #newWord = newWord + recursiveBiConditional(list[1], count)
     else:
         split = word.split("<->")
         x1 = split[0]
