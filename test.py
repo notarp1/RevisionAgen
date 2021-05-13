@@ -140,28 +140,8 @@ def checkPermutations(permutations, bbtocnf):
         for believestate in bbtocnf:
             sentence = str(believestate)
             count = 0
-            for x in operators:
-                if x in sentence:
-                    count = count + 1
-            if count > 1:
-                if recursive(sentence):
-                    point = point+1
-            else:
-                if "&" in sentence:
-                    vars = sentence.split(" & ")
-                    if andOPor(vars, 1):
-                        point = point + 1
-                elif "|" in sentence:
-                    vars = sentence.split(" | ")
-                    if andOPor(vars, 0):
-                        point = point + 1
-                else:
-                    if "~" in sentence:
-                        if not getOP(sentence[1]):
-                            point = point + 1
-                    else:
-                        if getOP(sentence):
-                            point = point + 1
+            if recursive(sentence):
+                point = point + 1
 
         points.append(point)
         operandsAssigned = []
@@ -176,6 +156,7 @@ def checkPermutations(permutations, bbtocnf):
         permutations.pop(ind)
     print(res)
 
+#Recursive funciton to convert biconditional symbols to implication symbols
 def recursiveBiConditional(word, count):
     count = count + 1
     if count == 1:
@@ -214,7 +195,6 @@ if __name__ == '__main__':
     for elements in list:
         if "<->" in elements:
             word = recursiveBiConditional(elements, 0)
-            print(word)
             bbtocnf.append(to_cnf(word))
         else:
             bbtocnf.append(to_cnf(elements))
