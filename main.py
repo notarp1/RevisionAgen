@@ -115,7 +115,7 @@ def stringtester(str):
                 if sortedlist[i] in sortedlist[j]:
                     return False
     return True
-
+#cirk
 def recursive(belief):
     if "&" in belief:
         bool = []
