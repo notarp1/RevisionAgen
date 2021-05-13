@@ -122,7 +122,10 @@ def recursive(belief):
         list = belief.split(" & ")
         for x in list:
             bool.append(recursive(x))
-        return bool[0] and bool[1]
+        if False in bool:
+            return False
+        else:
+            return True
     if "|" in belief:
         list2 = belief.strip("(").strip(")").split(" | ")
         return andOPor(list2, 0)
@@ -190,39 +193,89 @@ def recursiveBiConditional(word, count):
         return iffs
     return newWord
 
+
 def revise(clause,sortedStates, bb):
+    isInBB = False
+    unknowVars = False
+    unknowVarsList = []
+    isNeg = False
+    for x in str(clause):
+        if x == "~":
+            isNeg = True
+        if x in symbol:
+            if x in operands:
+                isInBB = True
+                isNeg = False
+            else:
+                unknowVars = True
+                if isNeg:
+                    unknowVarsList.append("~"+x)
+                    isNeg=False
+                else:
+                    unknowVarsList.append(x)
+    if unknowVars:
+        for x in unknowVarsList:
+            addOperands(str(x), True)
 
-    for i in range(0, len(sortedStates)):
-        values = sortedStates.__getitem__(i)
-        value1=values.strip(" ")
-        value2=value1.split(" ")
-        items = []
-        for x in value2:
-            items.append(x)
 
 
-        setOP(items)
-        a=recursive(str(clause))
-        if a:
-            break
-        global operandsAssigned
-        operandsAssigned = []
-    pointer = len(bb)
-    i = 0
-    while i < pointer:
-        values = bb.__getitem__(i)
-        use = to_cnf(values)
-        b = recursive(str(use))
-        if not b:
-            bb.pop(i)
-            pointer = pointer-1
-        else:
-            i = i + 1
+
+    if isInBB:
+        for i in range(0, len(sortedStates)):
+            values = sortedStates.__getitem__(i)
+            value1=values.strip(" ")
+            value2=value1.split(" ")
+            items = []
+            for x in value2:
+                items.append(x)
+
+
+            setOP(items)
+
+            a=recursive(str(clause))
+            if a:
+                break
+            global operandsAssigned
+            operandsAssigned = []
+
+
+
+        pointer = len(bb)
+        i = 0
+        while i < pointer:
+            values = bb.__getitem__(i)
+            use = to_cnf(values)
+            b = recursive(str(use))
+            if not b:
+                bb.pop(i)
+                pointer = pointer-1
+            else:
+                i = i + 1
 
     bb.append(to_cnf(clause))
 
     return bb
 
+
+def printRevise():
+    global x
+    printstr = ""
+    for x in bbtocnf:
+        printstr = printstr + str(x) + ", "
+    print("_________________REVISE_________________")
+    print("Current Belief BASE: " + printstr)
+    print("Most Plausible Truthvalues: " + sortedList[0])
+    print("Valid operands: '|', '&', '>>', '<->'")
+    print("EXIT to end program")
+
+def endOperations(bb, ops):
+    for x in symbol:
+        for p in bb:
+            if x in str(p):
+                addOperands(str(x), False)
+    list = getPermu(ops)
+    sortedList = checkPermutations(list, bb)
+    return sortedList
 
 if __name__ == '__main__':
     print("Enter belief state, seperated by comma")
@@ -238,25 +291,12 @@ if __name__ == '__main__':
             bbtocnf.append(to_cnf(word))
         else:
             bbtocnf.append(to_cnf(elements))
-
-    for x in symbol:
-        for p in str(bbtocnf):
-            if x in p:
-                addOperands(str(x), False)
-    #print("_________________hey_________________")
-    list = getPermu(operands)
-    sortedList = checkPermutations(list, bbtocnf)
+    sortedList = endOperations(bbtocnf, operands)
     print(sortedList)
-    while True:
-        printstr = ""
-        for x in bbtocnf:
-            printstr = printstr + str(x) + ", "
 
-        print("_________________REVISE_________________")
-        print("Current Belief BASE: " + printstr)
-        print("Most Plausible Truthvalues: " + sortedList[0])
-        print("Valid operands: '|', '&', '>>', '<->'")
-        print("EXIT to end program")
+
+    while True:
+        printRevise()
 
         line = input()
         opp = []
@@ -264,20 +304,13 @@ if __name__ == '__main__':
         if line == "EXIT":
             break
         else:
+            if "<->" in line:
+                word = recursiveBiConditional(line, 0)
+                line=to_cnf(word)
             bb=revise(to_cnf(line), sortedList, bbtocnf)
-            print("x")
             operands = []
+            sortedList = endOperations(bb, operands)
 
-
-            print(bb)
-            for x in symbol:
-                for p in bb:
-                    if x in str(p):
-                        addOperands(str(x), False)
-                # print("_________________hey_________________")
-            print("x")
-            list = getPermu(operands)
-            sortedList = checkPermutations(list, bb)
 
 
 
