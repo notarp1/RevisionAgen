@@ -12,7 +12,6 @@ test ="<->"
 
 
 def listOP(x):
-    construcop = []
     isAssigned = False
     for p in operands:
         if x == p:
