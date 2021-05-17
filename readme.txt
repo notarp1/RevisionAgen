@@ -18,4 +18,4 @@ When running the program you can make a belief state with any of the following s
 If multiple states need to be declared this is done by writing a ' , ' and then the next state
 
 Example of belief state:
-    ((a|b)&c)->d,e|f
+    ((a|b)&c)>>d,e|f
